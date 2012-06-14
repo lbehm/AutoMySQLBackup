@@ -134,7 +134,7 @@ mail_cleanup () {
 					  for j in "${backupfiles[@]}"; do
 						uuencode "$j" "$j" >> "$temp"
 					  done
-					  mail -s "${errornote} MySQL Backup Log and SQL Files for ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host} - ${datetimestamp}" ${CONFIG_mail_address} < "$temp"
+					  mail -a "X-Priority: 1" -s "${errornote} MySQL Backup Log and SQL Files for ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host} - ${datetimestamp}" ${CONFIG_mail_address} < "$temp"
 					else
 					  mutt -s "${errornote} MySQL Backup Log and SQL Files for ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host} - ${datetimestamp}" -a "${backupfiles[@]}" -- ${CONFIG_mail_address} < "$log_file"
 					fi
@@ -151,25 +151,25 @@ mail_cleanup () {
 						  else
 							uuencode "$j" "$j" > "$temp"
 						  fi
-						  mail -s "${errornote} MySQL Backup Log and SQL Files for ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host} - ${datetimestamp}" ${CONFIG_mail_address} < "$temp"
+						  mail -a "X-Priority: 1" -s "${errornote} MySQL Backup Log and SQL Files for ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host} - ${datetimestamp}" ${CONFIG_mail_address} < "$temp"
 						else
 						  mutt -s "${errornote} MySQL Backup Log and SQL Files for ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host} - ${datetimestamp}; Part $((j+1))/${#files[@]}" -a "${files[j]}" -- ${CONFIG_mail_address} < "$log_file"
 						fi
 					  done
 					else
-					  cat "$log_file" | mail -s "WARNING! - MySQL Backup exceeds set maximum attachment size on ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host} - ${datetimestamp}" ${CONFIG_mail_address}
+					  cat "$log_file" | mail -a "X-Priority: 1" -s "WARNING! - MySQL Backup exceeds set maximum attachment size on ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host} - ${datetimestamp}" ${CONFIG_mail_address}
 					fi
 				else
-				    cat "$log_file" | mail -s "WARNING! - MySQL Backup exceeds set maximum attachment size on ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host} - ${datetimestamp}" ${CONFIG_mail_address}
+				    cat "$log_file" | mail -a "X-Priority: 1" -s "WARNING! - MySQL Backup exceeds set maximum attachment size on ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host} - ${datetimestamp}" ${CONFIG_mail_address}
 			    fi
 				rm "$temp"
 			    ;;
 	    'log')
 			    cat "$log_file" | mail -s "MySQL Backup Log for ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host} - ${datetimestamp}" ${CONFIG_mail_address}
-			    [[ -s "$log_errfile" ]] && cat "$log_errfile" | mail -s "ERRORS REPORTED: MySQL Backup error Log for ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host} - ${datetimestamp}" ${CONFIG_mail_address}
+			    [[ -s "$log_errfile" ]] && cat "$log_errfile" | mail -a "X-Priority: 1" -s "ERRORS REPORTED: MySQL Backup error Log for ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host} - ${datetimestamp}" ${CONFIG_mail_address}
 			    ;;
 	    'quiet')
-			    [[ -s "$log_errfile" ]] && cat "$log_errfile" | mail -s "ERRORS REPORTED: MySQL Backup error Log for ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host} - ${datetimestamp}" ${CONFIG_mail_address}
+			    [[ -s "$log_errfile" ]] && cat "$log_errfile" | mail -a "X-Priority: 1" -s "ERRORS REPORTED: MySQL Backup error Log for ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host} - ${datetimestamp}" ${CONFIG_mail_address}
 			    ;;
 	    *)
 			    if [[ -s "$log_errfile" ]]; then
@@ -1698,8 +1698,7 @@ method_backup () {
 	#	daily_all-databases_DBNAME_2011-08-14_18h12m_7.sql(.enc).{gz,bzip2}
 
 	echo "======================================================================"
-	echo "AutoMySQLBackup version ${version}"
-	echo "http://sourceforge.net/projects/automysqlbackup/"
+	echo "AutoMySQLBackup based on version ${version}"
 	echo 
 	echo "Backup of Database Server - ${CONFIG_mysql_dump_host_friendly:-$CONFIG_mysql_dump_host}"
 	( IFS=,; echo "Databases - ${CONFIG_db_names[*]}" )
